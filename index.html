@@ -1,0 +1,91 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>chat</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+    <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <style>
+        body{
+            margin-top: 30px;
+        }
+        #messageArea{
+            display:none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="usrArea" class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label>Enter Username</label>
+                    <input class="form-control" id="username"></input>
+                    <br />
+                    <input type="button" class="btn btn-primary" value="login" onclick="userIn()" />
+                </div>
+            </div>
+        </div>
+        <div id="messageArea" class="row">
+            <div class="col-md-4">
+                <div class="well">
+                    <h3>Online users</h3>
+                    <ul class="list-group" id="users">
+
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <div class="chat" id="chat"></div>
+                    <div class="form-group">
+                        <label>Enter Message</label>
+                        <textarea class="form-control" id="message"></textarea>
+                        <br />
+                        <input type="button" class="btn btn-primary" value="send message" onclick="onSend()"/>
+                    </div>
+            </div>
+        </div>
+    </div>
+    <script>
+   
+            var socket = io.connect();
+        //var messageForm = $('messageForm');
+            var messageArea = $('#messageArea');
+            var usrArea = $('#usrArea');
+            var users = $('#users');
+            var message = $('#message');
+            var chat = $('#chat');
+            var username = $('#username');
+
+
+            function onSend(){
+                console.log('submitted');
+                socket.emit('send message', message.val());
+                message.val('');
+            };
+
+
+            socket.on('new message', function (data) {
+                chat.append('<div class="well"><strong>'+ data.user +'</strong>:' + data.msg + '</div>');
+            });
+        
+            function userIn() {
+                socket.emit('new user', username.val(), function (data) {
+                    if (data) {
+                        usrArea.hide();
+                        messageArea.show();
+                    }
+                });
+                username.val('');
+            }
+            socket.on('get users', function (data) {
+                var html = '';
+                for (var i = 0; i < data.length; i++) {
+                    html += '<li class="list-group-item">' + data[i] + '</li>';
+                }
+                users.html(html);
+            });
+    </script>
+</body>
+</html>
