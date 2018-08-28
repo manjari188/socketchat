@@ -1,3 +1,4 @@
 # socketchat
 
-![Alt Text](https://gph.is/2PcP2oP)
+![Alt Text](https://media.giphy.com/media/939t1OSjpFeMW0S4G5/giphy.gif)
+
